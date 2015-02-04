@@ -1,0 +1,44 @@
+
+OVERVIEW:
+cbrManager is a (currently) GUI-less Mac OS X tool being designed specifically for managing comic book and manga archives using the .cbr extension. 
+
+Currently, this program (or rather, these separate program files) allows the user to:
+	create a database of .cbr files
+	create a database recording the progress toward reading each series
+	list, count, filter basic information about the files
+	manually set, increment, decrement the progress of a series
+	open specific files
+	open the next file to be read in a series
+	
+
+This program is still in an early stage of development. Planned features include:
+
+	integrating the building and updating of dbs into the cbrManager.py program
+	a graphical user interface
+	support for Windows and Linux
+	support for archives using extensions other than .cbr (cbz, cb7, etc)
+	a tool to simplify copying files to/from an external drive
+	user profiles with individulized progress
+	cleaner code
+	support for Python 3 (maybe)
+
+
+REQUIREMENTS:
+cbrManager was written for Mac OS X using Python 2.7. I am uncertain how well it will run using other operating systems or other versions of python. I anticipate making the program compatible with other OSs in the near future.
+
+LANGUAGES/LIBRARIES USED:
+Python 2.7
+sqlite3
+
+PURPOSE:
+The purpose of my writing this program is 1) to create a program for fun that will actually make my life easier, and 2) to practice writing code. It is very likely that there are other programs out there that are exactly like (or perhaps much better than) this program. I have purposefully avoided researching similar programs, because I will learn more by creating my own from scratch. After I am reasonably satisfied, I will look at other programs for inspiration on improving my own.
+
+AUTHOR:
+Jonathan Hinson (jnthnhinson)
+jnthnhinson@gmail.com
+
+I honestly doubt this README will ever be read by anyone else, but if someone is reading this:
+1) Thank you for your interest and for reading this far!
+2) Feel free to email me any questions, advice, or other suggestions.
+	
+

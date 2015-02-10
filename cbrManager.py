@@ -159,7 +159,7 @@ def parseInput(input):
         printHelp()
     elif (input == "open" or input == "o"):
         parseOpen()
-    elif (input == "count" or input == "c"):
+    elif (input == "count"):
         category = raw_input("which column?")
         count(category, raw_input("target?"))
     elif (input == "incr"):

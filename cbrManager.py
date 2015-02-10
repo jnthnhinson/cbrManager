@@ -4,6 +4,8 @@ import os
 #SANATISE YOUR DATA!!!
 #Add data w/o overwriting
 #NOTE TO SELF: no column found errors often mean add \' \'
+#enable user to change series name
+
 
 validColumns = ['type', 'company', 'storyGroup', 'series', 'volume', 'filename']
 validCommands = ['quit', 'filter', 'list', 'help', 'count', 'hello']
@@ -64,21 +66,29 @@ def openSeries(series):
         #open next
         c.execute('SELECT current FROM progress WHERE series=\'' + series + '\'')
         current = c.fetchall()
-        c.execute('SELECT launchable FROM files WHERE series=\'' + series + '\' AND ord=' + str(current[0][0]))
-        result = c.fetchone()
-        if (result == None):
-            print ("You have already read all titles in the series " + series + ".")
+        '''print current
+        print current[0]
+        print current[0][0]'''
+        if current == None:
+            print "That's interesting..."
         else:
-            print result[0]
-            os.system("open " + result[0])
+            print current
+            c.execute('SELECT launchable FROM files WHERE series=\'' + series + '\' AND ord=' + str(current[0][0]))
+            result = c.fetchone()
+            if (result == None):
+                print ("You have already read all titles in the series " + series + ".")
+            else:
+                print result[0]
+                os.system("open " + result[0].replace(" ", "\\ ").replace("(", "\(").replace(")", "\)"))
         
-            incrProgress(series)
+                incrProgress(series)
  
     #if len(results) == 0: print "File not found."
     #else: os.system("start " + c.fetchall[0])
 
 def parseOpen():
     series = raw_input("which series?\n")
+    c.execute('UPDATE toContinue SET series=\'' + series + '\'')
     openSeries(series)
         
 def parseFilter():
@@ -121,21 +131,35 @@ def setProgress(series, current):
 def reset(which):
     if which == "all": c.execute('UPDATE progress SET current=0')   
     else: c.execute('UPDATE progress SET current=0 WHERE series=\'' + which + '\'')   
+    
+def doesExist(series):
+    c.execute('SELECT COUNT(*) FROM files WHERE series=\'' + series + '\'')
+    return c.fetchone()[0] > 0
+    
+def continueReading():
+    c.execute('SELECT series FROM toContinue')
+    #lastRead in very different meaning than the previous one. Rename and refactor!
+    lastRead = c.fetchone()[0]
+    print lastRead
+    if doesExist(lastRead):
+        openSeries(lastRead)
+    else:
+        print "You have yet to start anything. Try open."
            
 def parseInput(input):
-    if (input == "quit"):
+    if (input == "quit" or input == "q"):
         conn.commit()
         conn.close()
         return False
-    elif (input == "filter"):
+    elif (input == "filter" or  or input == "f"):
         parseFilter()
-    elif (input == "list"):
+    elif (input == "list" or input == "l"):
         parseList()
-    elif (input == "help"):
+    elif (input == "help" or input == "h"):
         printHelp()
-    elif (input == "open"):
+    elif (input == "open" or input == "o"):
         parseOpen()
-    elif (input == "count"):
+    elif (input == "count" or input == "c"):
         category = raw_input("which column?")
         count(category, raw_input("target?"))
     elif (input == "incr"):
@@ -144,7 +168,7 @@ def parseInput(input):
         print "Hiya!"
     elif (input == "c"):
         count2(raw_input("category?"))
-    elif (input == "progress"):
+    elif (input == "progress" or input == "p"):
         printProgress()
     elif (input == "++"):
         incrProgress(raw_input("series?"))
@@ -155,6 +179,8 @@ def parseInput(input):
     elif (input == "reset"):
         which = raw_input("which series would you like to reset?")
         if raw_input("Are you sure you wish to reset progress for " + which +"? (y/n)") == "y": reset(which)
+    elif (input == "continue" or input == "c"):
+        continueReading()
     else:
         printInvalid()
 

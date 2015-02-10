@@ -15,9 +15,9 @@ We could:
 
 path = '/Users/jnthnhinson/Documents/Comics'
 
-def progressExists():
-    c.execute('SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'progress\'')
-    if (c.fetchone() == None): return false
+def tableExists(tableName):
+    c.execute('SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'' + tableName + '\'')
+    if (c.fetchone() == None): return False
     else: return True
     
 
@@ -31,14 +31,14 @@ def getPaths():
     #path = '/Users/jnthnhinson/Documents/Comics'
     matches = []
     for root, dirnames, filenames in os.walk(path):
-        for filename in fnmatch.filter(filenames, '*.txt'):
+        for filename in fnmatch.filter(filenames, '*.cbr'):
             matches.append(os.path.join(root, filename))
     
     return matches
     
 def getLastRead():
     lastRead = {}
-    if progressExists():
+    if tableExists("progress"):
         progress = loadProgress()
         for series in progress:
             c.execute('SELECT launchable FROM files WHERE series=\'' + series + '\' AND ord=' + str(progress[series]))
@@ -49,20 +49,43 @@ def getLastRead():
             
         return progress, lastRead
     
+'''
+
+numInSeries = 0
+fileCount = 0
+prevSeries = ""
+for file in matches:
+    parts = file.split('/')
+    if parts[pathLength + 3] != prevSeries:
+        numInSeries = 0
+        prevSeries = parts[pathLength + 3]
+    c.execute("INSERT INTO files(type, company, storyGroup, series, filename, launchable, ord) VALUES (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\', \'%s\', %d)" % (parts[pathLength], parts[pathLength+1], parts[pathLength+2], parts[pathLength+3], parts[pathLength+4], file, numInSeries))
+    fileCount += 1
+
+
+'''
+    
+    
 def buildPrimaryTable():
     c.execute('DROP TABLE IF EXISTS files')
-    c.execute('CREATE TABLE files (type text, company text, storyGroup text, series text, volume text, filename text, launchable text, ord int)')
+    c.execute('CREATE TABLE files (type text, company text, storyGroup text, series text, filename text, launchable text, ord int)')
     
     matches = getPaths()
     pathLength = len(path.split('/'))
 
-    count = 0
+    numInSeries = 0
+    fileCount = 0
+    prevSeries = ""
     for file in matches:
         parts = file.split('/')
-        c.execute("INSERT INTO files(type, company, storyGroup, series, volume, filename, launchable, ord) VALUES (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\', \'%s\', \'%s\', %d)" % (parts[pathLength], parts[pathLength+1], parts[pathLength+2], parts[pathLength+3], parts[pathLength+4], parts[pathLength+5], file, count))
-        count += 1
+        if parts[pathLength + 3] != prevSeries:
+            numInSeries = 0
+            prevSeries = parts[pathLength + 3]
+        c.execute("INSERT INTO files(type, company, storyGroup, series, filename, launchable, ord) VALUES (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\', \'%s\', %d)" % (parts[pathLength], parts[pathLength+1], parts[pathLength+2], parts[pathLength+3], parts[pathLength+4], file, numInSeries))
+        fileCount += 1
+        numInSeries += 1
     
-    print str(count) + " files total"
+    print str(fileCount) + " files total"
     
 def buildProgressTable():
     c.execute('DROP TABLE IF EXISTS progress')
@@ -106,6 +129,15 @@ def printProgressOf(series):
     c.execute('SELECT current FROM progress WHERE series=\'' + series + '\'')
     print series + ': current progress -- ' + str(c.fetchone()[0])
     
+def blargh(reset):
+    if reset:
+        c.execute('DROP TABLE IF EXISTS toContinue')
+        
+    if not tableExists("toContinue"):
+        c.execute('CREATE TABLE toContinue (series text)')
+        c.execute('INSERT INTO toContinue(series) VALUES ("not a series")')
+   
+   
 if __name__ == "__main__":
     
     conn = sqlite3.connect('allFiles.db')
@@ -118,6 +150,8 @@ if __name__ == "__main__":
     
     buildProgressTable()
     updateProgress(progress, lastRead)
+    
+    blargh(True)
 
     conn.commit()
     conn.close()

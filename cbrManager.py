@@ -151,7 +151,7 @@ def parseInput(input):
         conn.commit()
         conn.close()
         return False
-    elif (input == "filter" or  or input == "f"):
+    elif (input == "filter" or input == "f"):
         parseFilter()
     elif (input == "list" or input == "l"):
         parseList()

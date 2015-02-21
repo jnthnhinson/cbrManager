@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import traceback
 
 #SANATISE YOUR DATA!!!
 #Add data w/o overwriting
@@ -50,8 +51,8 @@ def count(category, target):
      c.execute('SELECT COUNT(*) FROM files WHERE ' + category + '=\'' + target + '\'')
      print c.fetchone()[0]
 
-def incr(file):
-    c.execute('UPDATE files SET ord = ord + 1 WHERE filename=\'' + file + '\'')
+#def incr(file):
+#    c.execute('UPDATE files SET ord = ord + 1 WHERE filename=\'' + file + '\'')
         
 def orderFound(series):
     c.execute('SELECT COUNT(*) FROM files WHERE series=\'' + series + '\' AND ord>=0')
@@ -146,7 +147,16 @@ def continueReading():
     else:
         print "You have yet to start anything. Try open."
            
+# def parseInput(input, prevInput):
 def parseInput(input):
+    # print "test"
+#     print input
+#     print "input: " + input
+#     if prevInput != None:
+#         print "prev: " + prevInput
+#     if (input == "^[[A"):
+#         print "fuck"
+#         parseInput(prevInput, None)
     if (input == "quit" or input == "q"):
         conn.commit()
         conn.close()
@@ -162,11 +172,7 @@ def parseInput(input):
     elif (input == "count"):
         category = raw_input("which column?")
         count(category, raw_input("target?"))
-    elif (input == "incr"):
-        incr(raw_input("which file?"))
-    elif (input == "hello"):
-        print "Hiya!"
-    elif (input == "c"):
+    elif (input == "cdsa"):
         count2(raw_input("category?"))
     elif (input == "progress" or input == "p"):
         printProgress()
@@ -194,11 +200,14 @@ if __name__ == "__main__":
     
     running = True;
     print "Welcome to cbrManager!"
+    # input = None
     while (running):
         print
+        # prevInput = input
         input = raw_input()
         print
         
-        running = parseInput(input)
-        #try: running = parseInput(input)
-        #except: print "error"
+        #running = parseInput(input)
+        # running = parseInput(input, prevInput)
+        try: running = parseInput(input)
+        except: print traceback.format_exc()

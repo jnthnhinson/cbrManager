@@ -18,7 +18,7 @@ c.execute('DROP TABLE IF EXISTS files')
 c.execute('CREATE TABLE files (type text, company text, storyGroup text, series text, filename text, launchable text, ord int)')
     
 
-pathLength = len(path.split('/'))
+pathLength = len(path.split('/'))  
 
 numInSeries = 0
 fileCount = 0

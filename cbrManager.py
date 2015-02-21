@@ -7,207 +7,219 @@ import traceback
 #NOTE TO SELF: no column found errors often mean add \' \'
 #enable user to change series name
 
-
-validColumns = ['type', 'company', 'storyGroup', 'series', 'volume', 'filename']
-validCommands = ['quit', 'filter', 'list', 'help', 'count', 'hello']
-
-def listAll(category):
-    c.execute('SELECT ' + category + ', company FROM files GROUP BY ' + category)
-    for result in c.fetchall():
-        print result[0]
-
-
-def filterBy(category, target):
-    #for row in c.execute('SELECT * FROM files WHERE company=' + company):
-    #    print row
-    c.execute('SELECT * FROM files WHERE ' + category + '=\'' + target + '\'')
-    for result in c.fetchall():
-        print result
+class cbrManager:
+    validColumns = ['type', 'company', 'storyGroup', 'series', 'volume', 'filename']
+    validCommands = ['quit', 'filter', 'list', 'help', 'count', 'hello']
+    conn = None
+    c = None
     
-def filterSeriesBy(category, target):
-    #for row in c.execute('SELECT * FROM files WHERE company=' + company):
-    #    print row
-    c.execute('SELECT series FROM files WHERE ' + category + '=\'' + target + '\'')
-    for result in c.fetchall():
-        print result
+    def __init__(self):
+        print "constructing"
+        os.system('clear')
+        self.conn = sqlite3.connect('allFiles.db')
+        self.c = self.conn.cursor()
 
-# def openSeries(series):
-#     # WON'T WORK AS DESIRED. MISSING LOGIC TO GET MOST RECENT.
-#     c.execute('SELECT launchable FROM files WHERE series=\'' + series + '\'')
-#     results = c.fetchall()
-#     #if len(results) == 0: print "File not found."
-#     #else: os.system("start " + c.fetchall[0])
-#     for r in results:
-#         print r[0]
-#         os.system("open " + r[0])
-#         break
-        
-def count2(category):
-    c.execute('SELECT   ' + category + ', COUNT(*) FROM files GROUP BY ' + category)
-    for count in c.fetchall():
-        print count[0] + ': ' + str(count[1])
-        
-def count(category, target):
-     c.execute('SELECT COUNT(*) FROM files WHERE ' + category + '=\'' + target + '\'')
-     print c.fetchone()[0]
+    def listAll(self, category):
+        self.c.execute('SELECT ' + category + ', company FROM files GROUP BY ' + category)
+        for result in self.c.fetchall():
+            print result[0]
 
-#def incr(file):
-#    c.execute('UPDATE files SET ord = ord + 1 WHERE filename=\'' + file + '\'')
-        
-def orderFound(series):
-    c.execute('SELECT COUNT(*) FROM files WHERE series=\'' + series + '\' AND ord>=0')
-    return c.fetchone()[0] >= 1
-    #c.execute('UPDATE files SET ord = ord + 1')
-    #c.execute('UPDATE files SET ord = ord + 2 WHERE ord >= 0')
-        
-def openSeries(series):
-    # WON'T WORK AS DESIRED. MISSING LOGIC TO GET MOST RECENT.
+
+    def filterBy(self, category, target):
+        #for row in self.c.execute('SELECT * FROM files WHERE company=' + company):
+        #    print row
+        self.c.execute('SELECT * FROM files WHERE ' + category + '=\'' + target + '\'')
+        for result in self.c.fetchall():
+            print result
     
-    if (orderFound):
-        #open next
-        c.execute('SELECT current FROM progress WHERE series=\'' + series + '\'')
-        current = c.fetchall()
-        '''print current
-        print current[0]
-        print current[0][0]'''
-        if current == None:
-            print "That's interesting..."
-        else:
-            print current
-            c.execute('SELECT launchable FROM files WHERE series=\'' + series + '\' AND ord=' + str(current[0][0]))
-            result = c.fetchone()
-            if (result == None):
-                print ("You have already read all titles in the series " + series + ".")
+    def filterSeriesBy(self, category, target):
+        #for row in self.c.execute('SELECT * FROM files WHERE company=' + company):
+        #    print row
+        self.c.execute('SELECT series FROM files WHERE ' + category + '=\'' + target + '\'')
+        for result in self.c.fetchall():
+            print result
+
+    # def openSeries(series):
+    #     # WON'T WORK AS DESIRED. MISSING LOGIC TO GET MOST RECENT.
+    #     self.c.execute('SELECT launchable FROM files WHERE series=\'' + series + '\'')
+    #     results = self.c.fetchall()
+    #     #if len(results) == 0: print "File not found."
+    #     #else: os.system("start " + self.c.fetchall[0])
+    #     for r in results:
+    #         print r[0]
+    #         os.system("open " + r[0])
+    #         break
+        
+    def count2(self, category):
+        self.c.execute('SELECT   ' + category + ', COUNT(*) FROM files GROUP BY ' + category)
+        for count in self.c.fetchall():
+            print count[0] + ': ' + str(count[1])
+        
+    def count(self, category, target):
+         self.c.execute('SELECT COUNT(*) FROM files WHERE ' + category + '=\'' + target + '\'')
+         print self.c.fetchone()[0]
+
+    #def incr(file):
+    #    self.c.execute('UPDATE files SET ord = ord + 1 WHERE filename=\'' + file + '\'')
+        
+    def orderFound(self, series):
+        self.c.execute('SELECT COUNT(*) FROM files WHERE series=\'' + series + '\' AND ord>=0')
+        return self.c.fetchone()[0] >= 1
+        #self.c.execute('UPDATE files SET ord = ord + 1')
+        #self.c.execute('UPDATE files SET ord = ord + 2 WHERE ord >= 0')
+        
+    def openSeries(self, series):
+        # WON'T WORK AS DESIRED. MISSING LOGIC TO GET MOST RECENT.
+    
+        if (orderFound):
+            #open next
+            self.c.execute('SELECT current FROM progress WHERE series=\'' + series + '\'')
+            current = self.c.fetchall()
+            '''print current
+            print current[0]
+            print current[0][0]'''
+            if current == None:
+                print "That's interesting..."
             else:
-                print result[0]
-                os.system("open " + result[0].replace(" ", "\\ ").replace("(", "\(").replace(")", "\)"))
+                print current
+                self.c.execute('SELECT launchable FROM files WHERE series=\'' + series + '\' AND ord=' + str(current[0][0]))
+                result = self.c.fetchone()
+                if (result == None):
+                    print ("You have already read all titles in the series " + series + ".")
+                else:
+                    print result[0]
+                    os.system("open " + result[0].replace(" ", "\\ ").replace("(", "\(").replace(")", "\)"))
         
-                incrProgress(series)
+                    self.incrProgress(series)
  
-    #if len(results) == 0: print "File not found."
-    #else: os.system("start " + c.fetchall[0])
+        #if len(results) == 0: print "File not found."
+        #else: os.system("start " + self.c.fetchall[0])
 
-def parseOpen():
-    series = raw_input("which series?\n")
-    c.execute('UPDATE toContinue SET series=\'' + series + '\'')
-    openSeries(series)
+    def parseOpen(self):
+        series = raw_input("which series?\n")
+        self.c.execute('UPDATE toContinue SET series=\'' + series + '\'')
+        self.openSeries(series)
         
-def parseFilter():
-    column = raw_input("column?\n")
-    if column not in validColumns:
-        print column + " is not a valid column."
-    else:
-        target = raw_input("target?\n")
-        print
-        filterBy(column, target)
+    def parseFilter(self):
+        column = raw_input("column?\n")
+        if column not in validColumns:
+            print column + " is not a valid column."
+        else:
+            target = raw_input("target?\n")
+            print
+            self.filterBy(column, target)
     
-def parseList():
-    column = raw_input("which list?\n" + "".join(col + ' ' for col in validColumns) + "\n")
-    if column not in validColumns:
-        print column + " is not a valid column."
-    else:
-        print
-        listAll(column)
+    def parseList(self):
+        column = raw_input("which list?\n" + "".join(col + ' ' for col in validColumns) + "\n")
+        if column not in validColumns:
+            print column + " is not a valid column."
+        else:
+            print
+            self.listAll(column)
         
-def printProgress():
-    c.execute('SELECT series, current FROM progress')
-    for series in c.fetchall():
-        print series[0] + ": " + str(series[1])
+    def printProgress(self):
+        self.c.execute('SELECT series, current FROM progress')
+        for series in self.c.fetchall():
+            print series[0] + ": " + str(series[1])
     
-def printHelp():
-    print "Use the following commands:\n" + "".join(command + " " for command in validCommands)
+    def printHelp(self):
+        print "Use the following commands:\n" + "".join(command + " " for command in validCommands)
     
-def printInvalid():
-    print "Invalid command. Type \'help\' for list of commands"
+    def printInvalid(self):
+        print "Invalid command. Type \'help\' for list of commands"
     
-def incrProgress(series):
-    c.execute('UPDATE progress SET current=current + 1 WHERE series=\'' + series + '\'')
+    def incrProgress(self, series):
+        self.c.execute('UPDATE progress SET current=current + 1 WHERE series=\'' + series + '\'')
     
-def decrProgress(series):
-    c.execute('UPDATE progress SET current=current - 1 WHERE series=\'' + series + '\'')   
+    def decrProgress(self, series):
+        self.c.execute('UPDATE progress SET current=current - 1 WHERE series=\'' + series + '\'')   
     
-def setProgress(series, current):
-    c.execute('UPDATE progress SET current=' + str(current) + ' WHERE series=\'' + series + '\'')    
+    def setProgress(self, series, current):
+        self.c.execute('UPDATE progress SET current=' + str(current) + ' WHERE series=\'' + series + '\'')    
     
-def reset(which):
-    if which == "all": c.execute('UPDATE progress SET current=0')   
-    else: c.execute('UPDATE progress SET current=0 WHERE series=\'' + which + '\'')   
+    def reset(self, which):
+        if which == "all": self.c.execute('UPDATE progress SET current=0')   
+        else: self.c.execute('UPDATE progress SET current=0 WHERE series=\'' + which + '\'')   
     
-def doesExist(series):
-    c.execute('SELECT COUNT(*) FROM files WHERE series=\'' + series + '\'')
-    return c.fetchone()[0] > 0
+    def doesExist(self, series):
+        self.c.execute('SELECT COUNT(*) FROM files WHERE series=\'' + series + '\'')
+        return self.c.fetchone()[0] > 0
     
-def continueReading():
-    c.execute('SELECT series FROM toContinue')
-    #lastRead in very different meaning than the previous one. Rename and refactor!
-    lastRead = c.fetchone()[0]
-    print lastRead
-    if doesExist(lastRead):
-        openSeries(lastRead)
-    else:
-        print "You have yet to start anything. Try open."
+    def continueReading(self):
+        self.c.execute('SELECT series FROM toContinue')
+        #lastRead in very different meaning than the previous one. Rename and refactor!
+        lastRead = self.c.fetchone()[0]
+        print lastRead
+        if self.doesExist(lastRead):
+            self.openSeries(lastRead)
+        else:
+            print "You have yet to start anything. Try open."
            
-# def parseInput(input, prevInput):
-def parseInput(input):
-    # print "test"
-#     print input
-#     print "input: " + input
-#     if prevInput != None:
-#         print "prev: " + prevInput
-#     if (input == "^[[A"):
-#         print "fuck"
-#         parseInput(prevInput, None)
-    if (input == "quit" or input == "q"):
-        conn.commit()
-        conn.close()
-        return False
-    elif (input == "filter" or input == "f"):
-        parseFilter()
-    elif (input == "list" or input == "l"):
-        parseList()
-    elif (input == "help" or input == "h"):
-        printHelp()
-    elif (input == "open" or input == "o"):
-        parseOpen()
-    elif (input == "count"):
-        category = raw_input("which column?")
-        count(category, raw_input("target?"))
-    elif (input == "cdsa"):
-        count2(raw_input("category?"))
-    elif (input == "progress" or input == "p"):
-        printProgress()
-    elif (input == "++"):
-        incrProgress(raw_input("series?"))
-    elif (input == "--"):
-        decrProgress(raw_input("series?"))
-    elif (input == "set"):
-        setProgress(raw_input("series?"), raw_input("current?"))
-    elif (input == "reset"):
-        which = raw_input("which series would you like to reset?")
-        if raw_input("Are you sure you wish to reset progress for " + which +"? (y/n)") == "y": reset(which)
-    elif (input == "continue" or input == "c"):
-        continueReading()
-    else:
-        printInvalid()
+    # def parseInput(input, prevInput):
+    def parseInput(self, input):
+        # print "test"
+    #     print input
+    #     print "input: " + input
+    #     if prevInput != None:
+    #         print "prev: " + prevInput
+    #     if (input == "^[[A"):
+    #         print "fuck"
+    #         parseInput(prevInput, None)
+        if (input == "quit" or input == "q"):
+            return False
+        elif (input == "filter" or input == "f"):
+            self.parseFilter()
+        elif (input == "list" or input == "l"):
+            self.parseList()
+        elif (input == "help" or input == "h"):
+            self.printHelp()
+        elif (input == "open" or input == "o"):
+            self.parseOpen()
+        elif (input == "count"):
+            category = raw_input("which column?")
+            self.count(category, raw_input("target?"))
+        elif (input == "cdsa"):
+            self.count2(raw_input("category?"))
+        elif (input == "progress" or input == "p"):
+            self.printProgress()
+        elif (input == "++"):
+            self.incrProgress(raw_input("series?"))
+        elif (input == "--"):
+            self.decrProgress(raw_input("series?"))
+        elif (input == "set"):
+            self.setProgress(raw_input("series?"), raw_input("current?"))
+        elif (input == "reset"):
+            which = raw_input("which series would you like to reset?")
+            if raw_input("Are you sure you wish to reset progress for " + which +"? (y/n)") == "y": self.reset(which)
+        elif (input == "continue" or input == "c"):
+            self.continueReading()
+        else:
+            self.printInvalid()
 
-    return True
+        return True
+
+    # def startup():
+    #     os.system('clear')
+    #     conn = sqlite3.connect('allFiles.db')
+    #     c = self.c.cursor()
+    
+    def run(self):
+        running = True;
+        print "Welcome to cbrManager!"
+    
+        while (running):
+            print
+            input = raw_input()
+            print
+        
+            try: running = cbrM.parseInput(input)
+            except: print traceback.format_exc()
+    
+    def shutdown(self):
+        self.conn.commit()
+        self.conn.close()
 
 if __name__ == "__main__":
-    os.system('clear')
-    conn = sqlite3.connect('allFiles.db')
-    c = conn.cursor()
-    
-    
-    running = True;
-    print "Welcome to cbrManager!"
-    # input = None
-    while (running):
-        print
-        # prevInput = input
-        input = raw_input()
-        print
-        
-        #running = parseInput(input)
-        # running = parseInput(input, prevInput)
-        try: running = parseInput(input)
-        except: print traceback.format_exc()
+    cbrM = cbrManager()
+    cbrM.run()
+    cbrM.shutdown()

@@ -26,29 +26,14 @@ class cbrManager:
 
 
     def filterBy(self, category, target):
-        #for row in self.c.execute('SELECT * FROM files WHERE company=' + company):
-        #    print row
         self.c.execute('SELECT * FROM files WHERE ' + category + '=\'' + target + '\'')
         for result in self.c.fetchall():
             print result
     
     def filterSeriesBy(self, category, target):
-        #for row in self.c.execute('SELECT * FROM files WHERE company=' + company):
-        #    print row
         self.c.execute('SELECT series FROM files WHERE ' + category + '=\'' + target + '\'')
         for result in self.c.fetchall():
             print result
-
-    # def openSeries(series):
-    #     # WON'T WORK AS DESIRED. MISSING LOGIC TO GET MOST RECENT.
-    #     self.c.execute('SELECT launchable FROM files WHERE series=\'' + series + '\'')
-    #     results = self.c.fetchall()
-    #     #if len(results) == 0: print "File not found."
-    #     #else: os.system("start " + self.c.fetchall[0])
-    #     for r in results:
-    #         print r[0]
-    #         os.system("open " + r[0])
-    #         break
         
     def count2(self, category):
         self.c.execute('SELECT   ' + category + ', COUNT(*) FROM files GROUP BY ' + category)
@@ -58,42 +43,26 @@ class cbrManager:
     def count(self, category, target):
          self.c.execute('SELECT COUNT(*) FROM files WHERE ' + category + '=\'' + target + '\'')
          print self.c.fetchone()[0]
-
-    #def incr(file):
-    #    self.c.execute('UPDATE files SET ord = ord + 1 WHERE filename=\'' + file + '\'')
-        
+      
     def orderFound(self, series):
         self.c.execute('SELECT COUNT(*) FROM files WHERE series=\'' + series + '\' AND ord>=0')
         return self.c.fetchone()[0] >= 1
-        #self.c.execute('UPDATE files SET ord = ord + 1')
-        #self.c.execute('UPDATE files SET ord = ord + 2 WHERE ord >= 0')
         
     def openSeries(self, series):
-        # WON'T WORK AS DESIRED. MISSING LOGIC TO GET MOST RECENT.
-    
-        if (orderFound):
-            #open next
-            self.c.execute('SELECT current FROM progress WHERE series=\'' + series + '\'')
-            current = self.c.fetchall()
-            '''print current
-            print current[0]
-            print current[0][0]'''
-            if current == None:
-                print "That's interesting..."
-            else:
-                print current
-                self.c.execute('SELECT launchable FROM files WHERE series=\'' + series + '\' AND ord=' + str(current[0][0]))
-                result = self.c.fetchone()
-                if (result == None):
-                    print ("You have already read all titles in the series " + series + ".")
-                else:
-                    print result[0]
-                    os.system("open " + result[0].replace(" ", "\\ ").replace("(", "\(").replace(")", "\)"))
-        
-                    self.incrProgress(series)
- 
-        #if len(results) == 0: print "File not found."
-        #else: os.system("start " + self.c.fetchall[0])
+
+        self.c.execute('SELECT current FROM progress WHERE series=\'' + series + '\'')
+        current = self.c.fetchall()
+
+        print current
+        self.c.execute('SELECT launchable FROM files WHERE series=\'' + series + '\' AND ord=' + str(current[0][0]))
+        result = self.c.fetchone()
+        if (result == None):
+            print ("You have already read all titles in the series " + series + ".")
+        else:
+            print result[0]
+            os.system("open " + result[0].replace(" ", "\\ ").replace("(", "\(").replace(")", "\)"))
+
+            self.incrProgress(series)
 
     def parseOpen(self):
         series = raw_input("which series?\n")
@@ -155,16 +124,7 @@ class cbrManager:
         else:
             print "You have yet to start anything. Try open."
            
-    # def parseInput(input, prevInput):
     def parseInput(self, input):
-        # print "test"
-    #     print input
-    #     print "input: " + input
-    #     if prevInput != None:
-    #         print "prev: " + prevInput
-    #     if (input == "^[[A"):
-    #         print "fuck"
-    #         parseInput(prevInput, None)
         if (input == "quit" or input == "q"):
             return False
         elif (input == "filter" or input == "f"):
@@ -197,11 +157,6 @@ class cbrManager:
             self.printInvalid()
 
         return True
-
-    # def startup():
-    #     os.system('clear')
-    #     conn = sqlite3.connect('allFiles.db')
-    #     c = self.c.cursor()
     
     def run(self):
         running = True;

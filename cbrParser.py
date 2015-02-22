@@ -31,7 +31,7 @@ POSSIBLE:
 
 
 '''
-validCommands = ['continue', 'progress', 'help', 'list', 'count', 'reset', '--', '++', 'filter', 'set', 'open', 'rename']
+validCommands = ['continue', 'progress', 'help', 'list', 'count', 'reset', '--', '++', 'filter', 'set', 'open', 'rename', 'rebuild']
 
 fields = ['type', 'company', 'storyGroup', 'series', 'volume', 'filename']
 
@@ -97,6 +97,13 @@ class parser:
             #should be made flex:
                 #count series xmen
                 #count series
+            #current:
+                #count series:
+                    #Saga: 12
+                    #Xmen: 33
+            #alt:
+                #count series:
+                    #2 series found
         else:
             print "error"
         
@@ -139,7 +146,7 @@ class parser:
             self.manager.setProgress(args[0], args[1])
             self.manager.printProgress()
         
-    def parseQuad(self, opeator, args):
+    def parseQuad(self, operator, args):
         if operator == 'rename':
             self.manager.rename(args[0], args[1], args[2])
             #haven't even started

@@ -13,6 +13,9 @@ import getAndBuild2
 #only positive progress
 #reset all
 
+path = '/Users/jnthnhinson/Documents/Comics'
+fields = ['type', 'company', 'storyGroup', 'series', 'volume', 'filename']
+
 class cbrManager:
     
     def __init__(self):
@@ -102,6 +105,21 @@ class cbrManager:
     def reset(self, which):
         if which == "all": self.c.execute('UPDATE progress SET current=0')   
         else: self.c.execute('UPDATE progress SET current=0 WHERE series=\'' + which + '\'')   
+        
+    def rename(self, targetField, curName, newName):
+        #add warning when two fields have same name ()
+        self.c.execute('SELECT * FROM files WHERE ' + targetField + '=\'' + curName + '\'')
+        value = self.c.fetchone()
+        targetPath = path
+        for i in range(len(fields)):
+            field = fields[i]
+            if field == targetField: break
+            targetPath += '/' + value[i]
+        print targetPath
+        currentPath = targetPath + '/' + curName
+        newPath = targetPath + '/' + newName
+        os.rename(currentPath, newPath)
+        self.tableBuilder.build()
     
     def doesExist(self, series):
         self.c.execute('SELECT COUNT(*) FROM files WHERE series=\'' + series + '\'')

@@ -130,17 +130,15 @@ class TableBuilder:
         self.updateProgress(progress, lastRead)
     
         self.blargh(True)
-
-        self.conn.commit()
-        self.conn.close()
-      
+ 
        
 if __name__ == "__main__":
     conn = sqlite3.connect('allFiles.db')
     c = conn.cursor()
     builder = TableBuilder(conn, c)
-    builder.build
-    
+    builder.build()
+    self.conn.commit()
+    self.conn.close()
     
      
     

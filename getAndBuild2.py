@@ -2,16 +2,7 @@ import fnmatch
 import os
 import sqlite3
 
-'''
-We could:
-    have a conditional during the insert
-    or 
-    load all values into dictionary, then set values post-rebuild (what if comics get renamed?)
-    
-    Can we use the filename to give us ord?
 
-'''
-#neg nums maybe? Need a way to update when earlier cbrs are added
 
 path = '/Users/jnthnhinson/Documents/Comics'
 
@@ -48,22 +39,6 @@ def getLastRead():
                 lastRead[series] = temp[0][0]
             
         return progress, lastRead
-    
-'''
-
-numInSeries = 0
-fileCount = 0
-prevSeries = ""
-for file in matches:
-    parts = file.split('/')
-    if parts[pathLength + 3] != prevSeries:
-        numInSeries = 0
-        prevSeries = parts[pathLength + 3]
-    c.execute("INSERT INTO files(type, company, storyGroup, series, filename, launchable, ord) VALUES (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\', \'%s\', %d)" % (parts[pathLength], parts[pathLength+1], parts[pathLength+2], parts[pathLength+3], parts[pathLength+4], file, numInSeries))
-    fileCount += 1
-
-
-'''
     
     
 def buildPrimaryTable():
@@ -136,8 +111,8 @@ def blargh(reset):
     if not tableExists("toContinue"):
         c.execute('CREATE TABLE toContinue (series text)')
         c.execute('INSERT INTO toContinue(series) VALUES ("not a series")')
-   
-   
+      
+       
 if __name__ == "__main__":
     
     conn = sqlite3.connect('allFiles.db')
@@ -156,18 +131,7 @@ if __name__ == "__main__":
     conn.commit()
     conn.close()
     
-    
-'''
-
-
-
-
-
-
-
-'''    
-    
-    
+     
     
     
     

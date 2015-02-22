@@ -2,22 +2,25 @@ import sqlite3
 import os
 import traceback
 
+import cbrParser
+import getAndBuild2
+
 #SANATISE YOUR DATA!!!
 #Add data w/o overwriting
 #NOTE TO SELF: no column found errors often mean add \' \'
 #enable user to change series name
 
+validColumns = ['type', 'company', 'storyGroup', 'series', 'volume', 'filename']
+validCommands = ['quit', 'filter', 'list', 'help', 'count', 'hello']
+
 class cbrManager:
-    validColumns = ['type', 'company', 'storyGroup', 'series', 'volume', 'filename']
-    validCommands = ['quit', 'filter', 'list', 'help', 'count', 'hello']
-    conn = None
-    c = None
     
     def __init__(self):
         print "constructing"
         os.system('clear')
         self.conn = sqlite3.connect('allFiles.db')
         self.c = self.conn.cursor()
+        self.parser = cbrParser.parser(self)
 
     def listAll(self, category):
         self.c.execute('SELECT ' + category + ', company FROM files GROUP BY ' + category)
@@ -49,7 +52,6 @@ class cbrManager:
         return self.c.fetchone()[0] >= 1
         
     def openSeries(self, series):
-
         self.c.execute('SELECT current FROM progress WHERE series=\'' + series + '\'')
         current = self.c.fetchall()
 
@@ -64,8 +66,8 @@ class cbrManager:
 
             self.incrProgress(series)
 
-    def parseOpen(self):
-        series = raw_input("which series?\n")
+    def open(self, series):
+        #series = raw_input("which series?\n")
         self.c.execute('UPDATE toContinue SET series=\'' + series + '\'')
         self.openSeries(series)
         
@@ -124,50 +126,22 @@ class cbrManager:
         else:
             print "You have yet to start anything. Try open."
            
-    def parseInput(self, input):
-        if (input == "quit" or input == "q"):
-            return False
-        elif (input == "filter" or input == "f"):
-            self.parseFilter()
-        elif (input == "list" or input == "l"):
-            self.parseList()
-        elif (input == "help" or input == "h"):
-            self.printHelp()
-        elif (input == "open" or input == "o"):
-            self.parseOpen()
-        elif (input == "count"):
-            category = raw_input("which column?")
-            self.count(category, raw_input("target?"))
-        elif (input == "cdsa"):
-            self.count2(raw_input("category?"))
-        elif (input == "progress" or input == "p"):
-            self.printProgress()
-        elif (input == "++"):
-            self.incrProgress(raw_input("series?"))
-        elif (input == "--"):
-            self.decrProgress(raw_input("series?"))
-        elif (input == "set"):
-            self.setProgress(raw_input("series?"), raw_input("current?"))
-        elif (input == "reset"):
-            which = raw_input("which series would you like to reset?")
-            if raw_input("Are you sure you wish to reset progress for " + which +"? (y/n)") == "y": self.reset(which)
-        elif (input == "continue" or input == "c"):
-            self.continueReading()
-        else:
-            self.printInvalid()
-
-        return True
+    def quit(self):
+        self.running = False
+        
+    def rebuild(self):
+        print "not yet implemented"
     
     def run(self):
-        running = True;
+        self.running = True;
         print "Welcome to cbrManager!"
     
-        while (running):
+        while (self.running):
             print
             input = raw_input()
             print
         
-            try: running = cbrM.parseInput(input)
+            try: self.parser.parseInput(input)
             except: print traceback.format_exc()
     
     def shutdown(self):

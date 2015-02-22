@@ -74,7 +74,7 @@ class parser:
         elif operator == 'quit' or operator == 'q':
             self.manager.quit()
         elif operator == 'rebuild':
-            self.manager.rebuild()
+            self.manager.build()
         else:
             print "error"
         

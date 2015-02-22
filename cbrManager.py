@@ -21,6 +21,7 @@ class cbrManager:
         self.conn = sqlite3.connect('allFiles.db')
         self.c = self.conn.cursor()
         self.parser = cbrParser.parser(self)
+        self.tableBuilder = getAndBuild2.TableBuilder(self.conn, self.c)
         
     def getSeriesList(self):
         self.c.execute('SELECT series FROM files GROUP BY series')
@@ -119,8 +120,8 @@ class cbrManager:
     def quit(self):
         self.running = False
         
-    def rebuild(self):
-        print "not yet implemented"
+    def build(self):
+        self.tableBuilder.build()
     
     def run(self):
         self.running = True;

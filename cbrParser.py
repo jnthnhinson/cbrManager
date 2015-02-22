@@ -31,6 +31,7 @@ POSSIBLE:
 
 
 '''
+validCommands = ['continue', 'progress', 'help', 'list', 'count', 'reset', '--', '++', 'filter', 'set', 'open', 'rename']
 
 fields = ['type', 'company', 'storyGroup', 'series', 'volume', 'filename']
 
@@ -49,6 +50,7 @@ class parser:
     
     def __init__(self, manager):
         self.manager = manager
+        self.seriesList = manager.getSeriesList()
 
     def testNumArgs(self, args, expected1, expected2 = -1):
         n = len(args)
@@ -91,7 +93,7 @@ class parser:
         elif operator == 'list' or operator == 'ls':
             self.manager.listAll(args[0])
         elif operator == 'count':
-            self.manager.count(args[0])
+            self.manager.count2(args[0])
             #should be made flex:
                 #count series xmen
                 #count series
@@ -99,15 +101,18 @@ class parser:
             print "error"
         
     def parseDual2(self, operator, args):
-        if args[0] not in series:
+        if args[0] not in self.seriesList:
             print "error"
     
         elif operator == 'reset':
             self.manager.reset(args[0])
+            self.manager.printProgress()
         elif operator == '++':
             self.manager.incrProgress(args[0])
+            self.manager.printProgress()
         elif operator == '--':
             self.manager.decrProgress(args[0])
+            self.manager.printProgress()
         else:
             print "error"
         
@@ -127,11 +132,12 @@ class parser:
             self.manager.filterBy(args[0], args[1])
 
     def parseTrip2(self, operator, args):
-        if args[0] not in series:
+        if args[0] not in self.seriesList:
             print "error"
         
         elif operator == 'set':
             self.manager.setProgress(args[0], args[1])
+            self.manager.printProgress()
         
     def parseQuad(self, opeator, args):
         if operator == 'rename':

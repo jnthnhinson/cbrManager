@@ -10,8 +10,8 @@ import getAndBuild2
 #NOTE TO SELF: no column found errors often mean add \' \'
 #enable user to change series name
 
-validColumns = ['type', 'company', 'storyGroup', 'series', 'volume', 'filename']
-validCommands = ['quit', 'filter', 'list', 'help', 'count', 'hello']
+#only positive progress
+#reset all
 
 class cbrManager:
     
@@ -21,6 +21,13 @@ class cbrManager:
         self.conn = sqlite3.connect('allFiles.db')
         self.c = self.conn.cursor()
         self.parser = cbrParser.parser(self)
+        
+    def getSeriesList(self):
+        self.c.execute('SELECT series FROM files GROUP BY series')
+        seriesList = []
+        for series in self.c.fetchall():
+            seriesList.append(series[0])
+        return seriesList
 
     def listAll(self, category):
         self.c.execute('SELECT ' + category + ', company FROM files GROUP BY ' + category)
@@ -71,30 +78,13 @@ class cbrManager:
         self.c.execute('UPDATE toContinue SET series=\'' + series + '\'')
         self.openSeries(series)
         
-    def parseFilter(self):
-        column = raw_input("column?\n")
-        if column not in validColumns:
-            print column + " is not a valid column."
-        else:
-            target = raw_input("target?\n")
-            print
-            self.filterBy(column, target)
-    
-    def parseList(self):
-        column = raw_input("which list?\n" + "".join(col + ' ' for col in validColumns) + "\n")
-        if column not in validColumns:
-            print column + " is not a valid column."
-        else:
-            print
-            self.listAll(column)
-        
     def printProgress(self):
         self.c.execute('SELECT series, current FROM progress')
         for series in self.c.fetchall():
             print series[0] + ": " + str(series[1])
     
     def printHelp(self):
-        print "Use the following commands:\n" + "".join(command + " " for command in validCommands)
+        print "Use the following commands:\n" + "".join(command + " " for command in cbrParser.validCommands)
     
     def printInvalid(self):
         print "Invalid command. Type \'help\' for list of commands"

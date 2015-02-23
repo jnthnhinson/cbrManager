@@ -88,7 +88,8 @@ class parser:
         
     def parseDual1(self, operator, args):
         if args[0] not in fields:
-            print "error"
+            print "Error: Syntax error. Use following format:"
+            print operator + " fieldName"
         
         elif operator == 'list' or operator == 'ls':
             self.manager.listAll(args[0])
@@ -109,7 +110,8 @@ class parser:
         
     def parseDual2(self, operator, args):
         if args[0] not in self.seriesList:
-            print "error"
+            print "Error: Syntax error. Use following format:"
+            print operator + " seriesName"
     
         elif operator == 'reset':
             self.manager.reset(args[0])
@@ -133,14 +135,16 @@ class parser:
         
     def parseTrip1(self, operator, args):
         if args[0] not in fields:
-            print "error"
+            print "Error: Syntax error. Use following format:"
+            print operator + " fieldName value"
         
         elif operator == 'filter':
             self.manager.filterBy(args[0], args[1])
 
     def parseTrip2(self, operator, args):
         if args[0] not in self.seriesList:
-            print "error"
+            print "Error: Syntax error. Use following format:"
+            print operator + " seriesName value"
         
         elif operator == 'set':
             self.manager.setProgress(args[0], args[1])

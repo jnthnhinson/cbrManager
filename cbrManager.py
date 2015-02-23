@@ -15,7 +15,6 @@ import getAndBuild2
 
 path = '/Users/jnthnhinson/Documents/Comics'
 fields = ['type', 'company', 'storyGroup', 'series', 'volume', 'filename']
-SERIES = 3
 
 class cbrManager:
     
@@ -122,8 +121,6 @@ class cbrManager:
         os.rename(currentPath, newPath)
         
         if targetField == 'series':
-            # series = value[SERIES]
-            # self.c.execute('SELECT current FROM progress WHERE series=\'' + series + '\'')
             self.c.execute('SELECT current FROM progress WHERE series=\'' + curName + '\'')
             progress = self.c.fetchone()[0]
         
@@ -131,6 +128,8 @@ class cbrManager:
         
         if targetField == 'series':
             self.setProgress(newName, progress)
+            
+        #what about continue?
     
     def doesExist(self, series):
         self.c.execute('SELECT COUNT(*) FROM files WHERE series=\'' + series + '\'')

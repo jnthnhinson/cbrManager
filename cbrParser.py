@@ -149,7 +149,7 @@ class parser:
     def parseQuad(self, operator, args):
         if operator == 'rename':
             self.manager.rename(args[0], args[1], args[2])
-            #haven't even started
+            self.seriesList = self.manager.getSeriesList()
         
     def parseFlex(self, operator, args):
         if operator == 'open' or operator == 'o':

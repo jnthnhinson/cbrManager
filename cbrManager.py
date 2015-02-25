@@ -69,6 +69,7 @@ class cbrManager:
         print current
         self.c.execute('SELECT launchable FROM files WHERE series=\'' + series + '\' AND ord=' + str(current[0][0]))
         result = self.c.fetchone()
+        #error when opening absent series?
         if (result == None):
             print ("You have already read all titles in the series " + series + ".")
         else:
@@ -138,12 +139,16 @@ class cbrManager:
     def continueReading(self):
         self.c.execute('SELECT series FROM toContinue')
         #lastRead in very different meaning than the previous one. Rename and refactor!
-        lastRead = self.c.fetchone()[0]
-        print lastRead
-        if self.doesExist(lastRead):
-            self.openSeries(lastRead)
+        temp = self.c.fetchone()
+        if temp != None:
+            lastRead = temp[0]
+            print lastRead
+            if self.doesExist(lastRead):
+                self.openSeries(lastRead)
+            else:
+                print "You have yet to start anything. Try open."
         else:
-            print "You have yet to start anything. Try open."
+            print "****"
            
     def quit(self):
         self.running = False

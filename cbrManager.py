@@ -81,6 +81,7 @@ class cbrManager:
     def open(self, series):
         #series = raw_input("which series?\n")
         self.c.execute('UPDATE toContinue SET series=\'' + series + '\'')
+        self.continueExists()
         self.openSeries(series)
         
     def printProgress(self):
@@ -148,7 +149,8 @@ class cbrManager:
             else:
                 print "You have yet to start anything. Try open."
         else:
-            print "****"
+            print "Error. toContinue appears to be missing"
+            print "try rebuild"
            
     def quit(self):
         self.running = False

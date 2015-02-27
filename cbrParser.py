@@ -31,11 +31,11 @@ POSSIBLE:
 
 
 '''
-validCommands = ['continue', 'progress', 'help', 'list', 'count', 'reset', '--', '++', 'filter', 'set', 'open', 'rename', 'rebuild', 'allow', 'disallow', 'allowed']
+validCommands = ['continue', 'progress', 'help', 'list', 'count', 'reset', '--', '++', 'filter', 'set', 'open', 'rename', 'rebuild', 'allow', 'disallow', 'allowed', 'hardReset']
 
 fields = ['type', 'company', 'storyGroup', 'series', 'volume', 'filename']
 
-singles = ['continue', 'progress', 'help', 'quit', 'rebuild', 'allowed', 'c', 'p', 'h', 'q']
+singles = ['continue', 'progress', 'help', 'quit', 'rebuild', 'hardReset', 'allowed', 'c', 'p', 'h', 'q']
 duals1 = ['list', 'count', 'ls']
 duals2 = ['reset', '++', '--']
 trips1 = ['filter']

@@ -109,9 +109,6 @@ class TableBuilder:
             newProg = self.c.fetchone()
             if newProg != None:
                 offsets[series] = newProg[0] - progress[series]
-                #print series + ': x -- ' + str(newProg[0])
-                #print series + ': z -- ' + str(progress[series])
-                #print series + ': y  -- ' + str(offsets[series])
         
         return offsets
     
@@ -122,18 +119,13 @@ class TableBuilder:
         print "UPDATING PROGRESS..."
 
         for series in offsets:
-            #print series + ': offset           -- ' + str(offsets[series])
-            #print series + ': old progress     -- ' + str(progress[series])
-            #self.printProgressOf(series)
-            self.c.execute('UPDATE progress SET current = current + ' + str(offsets[series] + progress[series]) + ' WHERE series = \'' + series + '\'')
-            #self.printProgressOf(series)
-    
+            self.c.execute('UPDATE progress SET current = current + ' + str(offsets[series] + progress[series]) + ' WHERE series = \'' + series + '\'')    
     
     def printProgressOf(self, series):
         self.c.execute('SELECT current FROM progress WHERE series=\'' + series + '\'')
         print series + ': current progress -- ' + str(self.c.fetchone()[0])
     
-    def blargh(self, resetFlag):
+    def buildContinueTable(self, resetFlag):
         if resetFlag:
             self.c.execute('DROP TABLE IF EXISTS toContinue')
         
@@ -165,18 +157,20 @@ class TableBuilder:
         count = self.buildPrimaryTable(False) #must follow above; repeat if necessary
         self.buildProgressTable() #must follow above
         self.updateProgress(progress, lastRead) #must follow above
-        self.blargh(True) #must follow above
- 
-#
-# if __name__ == "__main__":
-#     conn = sqlite3.connect('allFiles.db')
-#     c = conn.cursor()
-#     builder = TableBuilder(conn, c)
-#     builder.build()
-#     self.conn.commit()
-#     self.conn.close()
-#
-     
-    
+        self.buildContinueTable(True) #must follow above
+        
+    # try this when regular build (especially first run) behaves oddly
+    def hardReset(self):
+        progress, lastRead = self.getLastRead()
+
+        #if not self.tableExists('files'): self.buildPrimaryTable(True)
+        self.buildPrimaryTable(True)
+        
+        self.buildAllowedFormats(True) 
+        count = self.buildPrimaryTable(False) 
+        self.buildProgressTable()
+        self.updateProgress(progress, lastRead)
+        self.buildContinueTable(True)
+
     
     

@@ -24,7 +24,7 @@ class cbrManager:
         self.conn = sqlite3.connect('allFiles.db')
         self.c = self.conn.cursor()
         self.parser = cbrParser.parser(self)
-        self.tableBuilder = getAndBuild2.TableBuilder(self.conn, self.c)
+        self.tableBuilder = getAndBuild2.TableBuilder(self, self.conn, self.c)
         
     def getSeriesList(self):
         self.c.execute('SELECT series FROM files GROUP BY series')
@@ -86,6 +86,11 @@ class cbrManager:
         
     def printProgress(self):
         self.c.execute('SELECT series, current FROM progress')
+        for series in self.c.fetchall():
+            print series[0] + ": " + str(series[1])
+            
+    def printAllowedFormats(self):
+        self.c.execute('SELECT * FROM allowedFormats')
         for series in self.c.fetchall():
             print series[0] + ": " + str(series[1])
     
@@ -151,6 +156,14 @@ class cbrManager:
         else:
             print "Error. toContinue appears to be missing"
             print "try rebuild"
+           
+    def allow(self, series, format):
+        self.c.execute('INSERT INTO allowedFormats(series, format) VALUES (\'' + series + '\', \'' + format + '\')')
+        self.tableBuilder.build()
+            
+    def disallow(self, series, format):
+        self.c.execute('DELETE FROM allowedFormats WHERE series=\'' + series + '\' AND format=\'' + format + '\'')
+        self.tableBuilder.build()
            
     def quit(self):
         self.running = False

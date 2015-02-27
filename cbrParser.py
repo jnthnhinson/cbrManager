@@ -31,20 +31,22 @@ POSSIBLE:
 
 
 '''
-validCommands = ['continue', 'progress', 'help', 'list', 'count', 'reset', '--', '++', 'filter', 'set', 'open', 'rename', 'rebuild']
+validCommands = ['continue', 'progress', 'help', 'list', 'count', 'reset', '--', '++', 'filter', 'set', 'open', 'rename', 'rebuild', 'allow', 'disallow', 'allowed']
 
 fields = ['type', 'company', 'storyGroup', 'series', 'volume', 'filename']
 
-singles = ['continue', 'progress', 'help', 'quit', 'rebuild', 'c', 'p', 'h', 'q']
+singles = ['continue', 'progress', 'help', 'quit', 'rebuild', 'allowed', 'c', 'p', 'h', 'q']
 duals1 = ['list', 'count', 'ls']
 duals2 = ['reset', '++', '--']
 trips1 = ['filter']
-trips2 = ['set']
+trips2 = ['set', 'allow', 'disallow']
 quads = ['rename']
 flex = ['open', 'o']
 
 duals = duals1 + duals2
 trips = trips1 + trips2
+
+
 
 class parser:
     
@@ -91,6 +93,8 @@ class parser:
             self.manager.quit()
         elif operator == 'rebuild':
             self.manager.build()
+        elif operator == 'allowed':
+            self.manager.printAllowedFormats()
         else:
             print "error"
         
@@ -157,6 +161,12 @@ class parser:
         elif operator == 'set':
             self.manager.setProgress(args[0], args[1])
             self.manager.printProgress()
+        elif operator == 'allow':
+            self.manager.allow(args[0], args[1])
+            self.manager.printAllowedFormats()
+        elif operator == 'disallow':
+            self.manager.disallow(args[0], args[1])
+            self.manager.printAllowedFormats()
         
     def parseQuad(self, operator, args):
         if operator == 'rename':
@@ -183,11 +193,11 @@ class parser:
         
     def trips1Error(self, operator):
         print "Error: Syntax error. Use following format:"
-        print operator + " fieldName"
+        print operator + " fieldName value"
         
     def trips2Error(self, operator):
         print "Error: Syntax error. Use following format:"
-        print operator + " seriesName"
+        print operator + " seriesName value"
         
     def quadsError(self, operator):
         print "Error: Syntax error. Use following format:"
@@ -221,6 +231,7 @@ class parser:
             
         elif operator in trips2:
             valid = self.testNumArgs(args, 2, lambda: self.trips2Error(operator))
+            if valid: self.parseTrip(operator, args)
         
         elif operator in quads:
             valid = self.testNumArgs(args, 3, lambda: self.quadsError(operator))

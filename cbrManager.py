@@ -81,7 +81,7 @@ class cbrManager:
     def open(self, series):
         #series = raw_input("which series?\n")
         self.c.execute('UPDATE toContinue SET series=\'' + series + '\'')
-        self.continueExists()
+        #self.continueExists() How the hell did this get here?
         self.openSeries(series)
         
     def printProgress(self):

@@ -155,7 +155,10 @@ class cbrManager:
                 print "You have yet to start anything. Try open."
         else:
             print "Error. toContinue appears to be missing"
-            print "try rebuild"
+            print "retrying"
+            self.build()
+            self.continueReading()
+            #could result in infinite recurion! (but unlikely)
            
     def allow(self, series, format):
         self.c.execute('INSERT INTO allowedFormats(series, format) VALUES (\'' + series + '\', \'' + format + '\')')
@@ -182,7 +185,8 @@ class cbrManager:
         
             try: self.parser.parseInput(input)
             except: print traceback.format_exc()
-    
+            
+     
     def shutdown(self):
         self.conn.commit()
         self.conn.close()
